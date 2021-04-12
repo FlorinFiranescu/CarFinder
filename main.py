@@ -33,6 +33,7 @@ Hp: {}
 
 
 rootSite = "https://www.mobile.de"
+#load the envs from .env file
 site_to_scrape= os.environ.get("site_to_scrape")
 googleFormLink = os.environ.get("googleFormLink")
 
@@ -49,8 +50,6 @@ while True:
     soup = BeautifulSoup(site_html, 'html.parser')
     for soupItem in soup.find_all(class_="vehicle-data"):
         myCar = car_container()
-        #vehicleTextSoup = soup.find(class_="vehicle-text")
-        #print(soupItem.prettify())
         myCar.name = soupItem.find(class_="vehicle-title").text
         myCar.href = rootSite + str(soupItem['href'])
         myCar.loc   =  soupItem.find(class_="u-margin-bottom-9").text
@@ -60,18 +59,16 @@ while True:
         myCar.km    = vehicInfo.find(class_="u-text-bold").text
         myCar.hp    = vehicInfo.find(class_="u-text-grey-60").text
         myCars.append(myCar)
-        #print(str(myCar))
-        # print("Price " + myCar.price)
-        # print("Specs " + myCar.specs)
-        # print("Km " + myCar.km)
-        # print("hp " + myCar.hp)
 
     try:
+        #if we don't find it, we are on the landing page
         btn_to_clk = driver.find_element_by_xpath("/html/body/div/div/div[3]/section/section[2]/div/div[1]/a[2]")
     except:
         btn_to_clk = driver.find_element_by_xpath("/html/body/div/div/div[3]/section/section[2]/div/div[1]/a")
     driver.execute_script("arguments[0].click();", btn_to_clk)
     if(searchedItems >= totalSearchResult):
+        #instead of checking if we are on the final page, we calculate
+        #the count of the items. In total, 10/page are shown
         break
 
     else:
